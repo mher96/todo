@@ -1,13 +1,14 @@
-import React, { Fragment } from 'react'
+import React from 'react'
+import { Box } from '@chakra-ui/layout'
 import TasksList from '../TasksList'
 import TaskForm from '../TaskForm'
 
 const Main = () => {
     return(
-        <Fragment>
-            <TasksList />
+        <Box maxWidth="540px" margin="0 auto">
             <TaskForm />
-        </Fragment>
+            <TasksList />
+        </Box>
     )
 }
 

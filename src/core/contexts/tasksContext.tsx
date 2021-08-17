@@ -1,33 +1,52 @@
-import React, { useCallback, useContext, useState } from 'react'
-import { TaskItem, Tasks } from '../types/TaskTypes'
-import { TasksProviderPropsType, TaskContextType } from '../types/TaskContextTypes'
+import React, { 
+    useContext, 
+    useReducer,
+} from 'react'
+import { Tasks } from '../types/TaskTypes'
+import { 
+    TasksProviderPropsType, 
+    TaskAction,
+    TaskContextType
+} from '../types/TaskContextTypes'
 
-// const taskss = [
-//         {
-//             id: '1',
-//             title: '1',
-//             description: 'd1',
-//             status: false
-//         },
-//         {
-//             id: '2',
-//             title: '2',
-//             description: 'dçASDasd2',
-//             status: true
-//         },
-//         {
-//             id: '3',
-//             title: '3',
-//             description: 'dasdasDAsd1',
-//             status: false
-//         },
-//     ]
-const initialValue: TaskContextType= {
+
+
+const initialValue = {
     tasks: [],
-    add: (data) => {},
-    update: (id, data) => {},
-    remove: (id) => {},
-    toggle: (id) => {},
+    dispatchTasks: () => {}
+}
+const reducer = (state: Tasks, action: TaskAction): Tasks => {
+    const { type, payload } = action
+    switch (type) {
+        case 'add':
+          return [
+            ...state,
+            payload
+        ];
+        case 'update':
+          return state.map(
+            task => task.id === payload.id 
+                ? {
+                    ...task,
+                    ...payload,
+                    date: new Date()
+                }
+                : task
+        );
+        case 'delete':
+          return state.filter(task => task.id !== payload.id);
+        case 'toggle':
+          return  state.map(task => {
+            if(task.id === payload.id) return {
+                ...task,
+                status: !task.status
+            }
+
+            return task
+        });
+        default:
+          return [];
+      }
 }
 
 const TasksContext = React.createContext<TaskContextType>(initialValue)
@@ -35,50 +54,12 @@ const TasksContext = React.createContext<TaskContextType>(initialValue)
 export const useTasks = () => useContext(TasksContext)
 
 const TasksProvider = (props:TasksProviderPropsType ) => {
-    const [tasks, setTasks] = useState<Tasks>([])
-
-    const add = (data: TaskItem) => {
-        setTasks([
-            ...tasks,
-            data
-        ])
-    }
-
-    const update = (id: string, data: TaskItem) => {
-        const updatedList = tasks.map(
-            task => task.id === id 
-                ? data
-                : task
-        )
-        setTasks(updatedList)
-    }
-
-    const remove = (id: string) => {
-        const updatedLIst = tasks.filter(task => task.id !== id)
-
-        setTasks(updatedLIst)
-    }
-
-    const toggle =(id: string): void => {
-        const tasksList = tasks.map(task => {
-            if(task.id === id) return {
-                ...task,
-                status: !task.status
-            }
-
-            return task
-        })
-
-        setTasks(tasksList)
-    }
+    const [tasks, dispatchTasks] = useReducer(reducer, [])
 
     return (    
         <TasksContext.Provider value={{
             tasks,
-            add,
-            update,
-            remove,
-            toggle,
+            dispatchTasks
         }}>
             {props.children}
         </TasksContext.Provider>

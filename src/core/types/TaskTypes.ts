@@ -3,6 +3,7 @@ export type TaskItem = {
     title: string;
     description: string;
     status: boolean;
+    date: Date;
 }
 
 export type Tasks = Array<TaskItem>

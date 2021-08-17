@@ -1,15 +1,26 @@
-import { ReactNode } from "react"
-import { Tasks } from './TaskTypes'
-import { UpdateTaskInterface, RemoveTaskInterface, AddTaskInterface, ToggleTaskInterface } from "../interfaces/TaskAction"
+import { ReactNode, Dispatch } from "react"
+import { Tasks, TaskItem } from './TaskTypes'
 
 export type TasksProviderPropsType = {
     children: ReactNode;
 }
 
+
+export enum TaskActionTypes {
+    ADD = 'add',
+    UPDATE = 'update',
+    DELETE = 'delete',
+    TOGGLE = 'toggle',
+}
+
+
+
+export interface TaskAction {
+    type: TaskActionTypes;
+    payload: TaskItem;
+}
+
 export type TaskContextType = {
     tasks: Tasks;
-    add: AddTaskInterface;
-    remove: RemoveTaskInterface;
-    update: UpdateTaskInterface;
-    toggle: ToggleTaskInterface;
+    dispatchTasks: Dispatch<TaskAction>;
 }
